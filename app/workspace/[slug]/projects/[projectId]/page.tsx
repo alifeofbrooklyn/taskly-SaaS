@@ -28,6 +28,7 @@ export default async function ProjectPage({
       },
     },
   })
+  
   if (!project || project.workspace.members.length === 0) {
     notFound()
   }
