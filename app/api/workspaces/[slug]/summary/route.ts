@@ -44,9 +44,18 @@ export async function GET(
     .slice(0, 5)
 
   // งานใกล้ deadline ทั้งหมด (ยังไม่เสร็จ มี due date และยังไม่เลยกำหนด)
-  const now = new Date()
+    const now = new Date()
+  const sevenDaysFromNow = new Date()
+  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
+
   const upcomingTasks = allTasks
-    .filter((t) => t.dueDate && t.status !== 'DONE' && new Date(t.dueDate) >= now)
+    .filter(
+      (t) =>
+        t.dueDate &&
+        t.status !== 'DONE' &&
+        new Date(t.dueDate) >= now &&
+        new Date(t.dueDate) <= sevenDaysFromNow
+    )
     .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
     .slice(0, 5)
 

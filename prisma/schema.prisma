@@ -21,6 +21,7 @@ model User {
   memberships   WorkspaceMember[]
   assignedTasks Task[]    @relation("AssignedTo")
   createdTasks  Task[]    @relation("CreatedBy")
+  attachments   Attachment[]
 }
 
 model Account {
@@ -114,6 +115,8 @@ model Task {
 
   createdBy   User    @relation("CreatedBy", fields: [createdById], references: [id])
   createdById String
+
+  attachments Attachment[]
 }
 
 enum Role {
@@ -134,4 +137,19 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  fileName   String
+  fileUrl    String
+  fileSize   Int
+  mimeType   String
+  createdAt  DateTime @default(now())
+
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId     String
+
+  uploadedBy User     @relation(fields: [uploadedById], references: [id])
+  uploadedById String
 }

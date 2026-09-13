@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 type Member = { id: string; name: string | null; image: string | null }
 
@@ -13,6 +13,16 @@ type Task = {
   dueDate: string | null
   assignee: Member | null
   assigneeId?: string | null
+}
+
+type Attachment = {
+  id: string
+  fileName: string
+  fileUrl: string
+  fileSize: number
+  mimeType: string
+  uploadedBy: { name: string | null }
+  createdAt: string
 }
 
 export default function TaskModal({
@@ -37,6 +47,67 @@ export default function TaskModal({
   )
   const [assigneeId, setAssigneeId] = useState(task.assignee?.id || '')
   const [isSaving, setIsSaving] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [isLoadingAttachments, setIsLoadingAttachments] = useState(true)
+
+  const fetchAttachments = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/tasks/${task.id}/attachments`)
+      const data = await res.json()
+      setAttachments(data.attachments || [])
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoadingAttachments(false)
+    }
+  }, [task.id])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchAttachments()
+  }, [fetchAttachments])
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const res = await fetch(`/api/tasks/${task.id}/attachments`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (res.ok) {
+        setAttachments((prev) => [data.attachment, ...prev])
+      } else {
+        alert(data.message || 'อัปโหลดไม่สำเร็จ')
+      }
+    } catch (error) {
+      console.error(error)
+      alert('เกิดข้อผิดพลาดในการอัปโหลด')
+    } finally {
+      setIsUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleDeleteAttachment = async (attachmentId: string) => {
+    const confirmed = window.confirm('ยืนยันที่จะลบไฟล์นี้ใช่หรือไม่?')
+    if (!confirmed) return
+
+    try {
+      await fetch(`/api/attachments/${attachmentId}`, { method: 'DELETE' })
+      setAttachments((prev) => prev.filter((a) => a.id !== attachmentId))
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   // ปิด modal ด้วยปุ่ม ESC
   useEffect(() => {
@@ -179,10 +250,75 @@ export default function TaskModal({
               >
                 <option value="">-- ไม่ระบุ --</option>
                 {members.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* ไฟล์แนบ */}
+          <div>
+            <label className="block text-sm text-slate-300 mb-2">
+              ไฟล์แนบ {attachments.length > 0 && `(${attachments.length})`}
+            </label>
+
+            {/* รายการไฟล์แนบ - แสดงก่อนปุ่มอัปโหลด */}
+            {isLoadingAttachments ? (
+              <div className="flex items-center justify-center py-6">
+                <svg className="animate-spin h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              </div>
+            ) : attachments.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                {attachments.map((att) => (
+                  <div
+                    key={att.id}
+                    className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 min-w-0"
+                  >
+                    <a
+                      href={att.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 min-w-0 text-blue-400 hover:underline text-sm flex-1"
+                    >
+                      <span className="shrink-0">📄</span>
+                      <span className="truncate">{att.fileName}</span>
+                    </a>
+                    <button
+                      onClick={() => handleDeleteAttachment(att.id)}
+                      className="text-slate-600 hover:text-red-400 cursor-pointer text-xs shrink-0 ml-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {/* ปุ่มอัปโหลด - อยู่ล่างสุด */}
+            <label className="flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-slate-700 rounded-lg cursor-pointer hover:border-slate-600 hover:bg-slate-800/50 transition-colors text-sm text-slate-400">
+              {isUploading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  กำลังอัปโหลด...
+                </>
+              ) : (
+                '📎 คลิกเพื่อแนบไฟล์ (สูงสุด 10 MB)'
+              )}
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                disabled={isUploading}
+                className="hidden"
+              />
+            </label>
           </div>
         </div>
 

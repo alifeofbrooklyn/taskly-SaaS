@@ -9,6 +9,7 @@ type TaskWithProject = {
   dueDate: string | null
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
   project: { id: string; name: string; color: string }
+  assignee: { id: string; name: string | null; image: string | null } | null
 }
 
 type Summary = {
@@ -115,7 +116,7 @@ export default function DashboardSummary({ slug }: { slug: string }) {
           )}
         </div>
 
-        {/* งานใกล้ deadline */}
+                {/* งานใกล้ deadline */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <h3 className="text-white font-medium text-sm mb-4">⏰ ใกล้ถึงกำหนดส่ง</h3>
           {summary.upcomingTasks.length === 0 ? (
@@ -135,9 +136,30 @@ export default function DashboardSummary({ slug }: { slug: string }) {
                     />
                     <span className="text-white text-sm truncate">{task.title}</span>
                   </div>
-                  <span className="text-slate-400 text-xs shrink-0">
-                    {task.dueDate && new Date(task.dueDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
-                  </span>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {task.assignee && (
+                      task.assignee.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={task.assignee.image}
+                          alt={task.assignee.name || ''}
+                          className="w-5 h-5 rounded-full"
+                          title={task.assignee.name || ''}
+                        />
+                      ) : (
+                        <div
+                          className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px]"
+                          title={task.assignee.name || ''}
+                        >
+                          {task.assignee.name?.charAt(0)}
+                        </div>
+                      )
+                    )}
+                    <span className="text-slate-400 text-xs">
+                      {task.dueDate && new Date(task.dueDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

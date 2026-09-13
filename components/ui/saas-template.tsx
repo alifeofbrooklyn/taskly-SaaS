@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -127,10 +128,15 @@ const Navigation = React.memo(() => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="text-white font-semibold text-lg">Taskly</span>
+            <Image
+  src="/taskly-logo.png"
+  alt="Taskly"
+  width={36}
+  height={36}
+  className="rounded-lg"
+  style={{ width: '36px', height: '36px' }}
+/>
+<span className="text-white font-semibold text-lg">Taskly</span>
           </div>
 
           {/* Desktop Nav */}
@@ -318,48 +324,51 @@ const Hero = React.memo(() => {
 
           {/* Mock Kanban Board */}
           <div className="p-6 flex gap-4 overflow-x-auto">
-            {[
-  { title: 'To Do', color: 'bg-slate-700', count: 3, tasks: [
-    { title: 'ออกแบบ UI หน้า Login', progress: 20 },
-    { title: 'เขียน API สำหรับ Task', progress: 0 },
-    { title: 'ตั้งค่า Database', progress: 10 },
-  ]},
-  { title: 'In Progress', color: 'bg-blue-600', count: 2, tasks: [
-    { title: 'พัฒนา Kanban Board', progress: 65 },
-    { title: 'ทดสอบระบบ Auth', progress: 80 },
-  ]},
-  { title: 'In Review', color: 'bg-yellow-600', count: 1, tasks: [
-    { title: 'Code Review PR #12', progress: 90 },
-  ]},
-  { title: 'Done', color: 'bg-green-600', count: 2, tasks: [
-    { title: 'ตั้งค่า Next.js', progress: 100 },
-    { title: 'เชื่อมต่อ Supabase', progress: 100 },
-  ]},
-].map((col) => (
-  <div key={col.title} className="flex-shrink-0 w-56">
-    <div className="flex items-center gap-2 mb-3">
-      <div className={`w-2 h-2 rounded-full ${col.color}`} />
-      <span className="text-white text-xs font-medium">{col.title}</span>
-      <span className="text-slate-500 text-xs ml-auto">{col.count}</span>
-    </div>
-    <div className="flex flex-col gap-2">
-      {col.tasks.map((task) => (
-        <div key={task.title} className="bg-slate-800 border border-slate-700 rounded-lg p-3">
-          <p className="text-slate-300 text-xs">{task.title}</p>
-          <div className="flex items-center gap-1 mt-2">
-            <div className="w-4 h-4 rounded-full bg-blue-500/50" />
-            <div className="h-1 flex-1 bg-slate-700 rounded-full">
-              <div
-                className={`h-1 rounded-full ${col.color}`}
-                style={{ width: `${task.progress}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-))}
+                                    {[
+              { title: 'To Do', color: 'bg-slate-700', count: 3, tasks: [
+                { title: 'ออกแบบ UI หน้า Login', progress: 20 },
+                { title: 'เขียน API สำหรับ Task', progress: 0 },
+                { title: 'ตั้งค่า Database', progress: 10 },
+              ]},
+              { title: 'In Progress', color: 'bg-blue-600', count: 2, tasks: [
+                { title: 'พัฒนา Kanban Board', progress: 65 },
+                { title: 'ทดสอบระบบ Auth', progress: 80 },
+              ]},
+              { title: 'In Review', color: 'bg-yellow-600', count: 1, tasks: [
+                { title: 'Code Review PR #12', progress: 90 },
+              ]},
+              { title: 'Done', color: 'bg-green-600', count: 2, tasks: [
+                { title: 'ตั้งค่า Next.js', progress: 100 },
+                { title: 'เชื่อมต่อ Supabase', progress: 100 },
+              ]},
+            ].map((col) => (
+                            <div
+                key={col.title}
+                className="flex-shrink-0 w-56 bg-slate-950/60 border border-slate-800 rounded-xl p-3 min-h-[260px]"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-2 h-2 rounded-full ${col.color}`} />
+                  <span className="text-white text-xs font-medium">{col.title}</span>
+                  <span className="text-slate-500 text-xs ml-auto">{col.count}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {col.tasks.map((task) => (
+                    <div key={task.title} className="bg-slate-800 border border-slate-700 rounded-lg p-3">
+                      <p className="text-slate-300 text-xs">{task.title}</p>
+                      <div className="flex items-center gap-1 mt-2">
+                        <div className="w-4 h-4 rounded-full bg-blue-500/50" />
+                        <div className="h-1 flex-1 bg-slate-700 rounded-full">
+                          <div
+                            className={`h-1 rounded-full ${col.color}`}
+                            style={{ width: `${task.progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -410,6 +419,183 @@ const Features = React.memo(() => {
 
 Features.displayName = 'Features'
 
+// How it works Section
+const steps = [
+  {
+    number: '01',
+    title: 'สร้าง Workspace',
+    description: 'ตั้งชื่อทีมของคุณ เริ่มต้นใช้งานได้ทันทีภายใน 30 วินาที',
+  },
+  {
+    number: '02',
+    title: 'สร้างโปรเจกต์และเชิญทีม',
+    description: 'จัดกลุ่มงานเป็นโปรเจกต์ เชิญเพื่อนร่วมทีมเข้ามาทำงานร่วมกัน',
+  },
+  {
+    number: '03',
+    title: 'จัดการงานบน Kanban Board',
+    description: 'สร้าง Task มอบหมายงาน กำหนด Priority และ Due Date',
+  },
+  {
+    number: '04',
+    title: 'ติดตามความคืบหน้า',
+    description: 'ดู Dashboard สรุปงาน ไม่พลาดทุก Deadline ของทีม',
+  },
+]
+
+const HowItWorks = React.memo(() => {
+  return (
+    <section id="how-it-works" className="py-24 px-6 bg-gray-950/50">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-16">
+          <h2
+            className="text-3xl md:text-4xl font-semibold mb-4"
+            style={{
+              background: 'linear-gradient(to bottom, #ffffff, rgba(255,255,255,0.7))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            เริ่มต้นใช้งานง่ายๆ ใน 4 ขั้นตอน
+          </h2>
+          <p className="text-gray-400 text-sm max-w-md mx-auto">
+            ไม่ต้องตั้งค่าซับซ้อน พร้อมใช้งานได้ทันทีหลังสมัคร
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step) => (
+            <div key={step.number} className="relative">
+              <div
+                className="text-5xl font-bold mb-4"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(59,130,246,0.8), rgba(59,130,246,0.2))',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {step.number}
+              </div>
+              <h3 className="text-white font-medium mb-2">{step.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+})
+
+HowItWorks.displayName = 'HowItWorks'
+
+// Pricing Section
+const plans = [
+  {
+    name: 'Free',
+    price: '0',
+    description: 'เหมาะสำหรับทีมเล็กเริ่มต้น',
+    features: ['1 Workspace', 'สูงสุด 5 สมาชิก', 'Kanban Board ไม่จำกัด', 'Dashboard พื้นฐาน'],
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    price: '299',
+    description: 'เหมาะสำหรับทีมที่กำลังเติบโต',
+    features: ['Workspace ไม่จำกัด', 'สมาชิกไม่จำกัด', 'รายงานขั้นสูง', 'Priority Support'],
+    highlighted: true,
+  },
+  {
+    name: 'Enterprise',
+    price: 'ติดต่อเรา',
+    description: 'สำหรับองค์กรขนาดใหญ่',
+    features: ['ทุกอย่างใน Pro', 'SSO / SAML', 'SLA รับประกัน', 'Dedicated Support'],
+    highlighted: false,
+  },
+]
+
+const Pricing = React.memo(() => {
+  return (
+    <section id="pricing" className="py-24 px-6">
+      <div className="max-w-5xl mx-auto">
+                <div className="text-center mb-16">
+          <span className="inline-block text-xs text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 px-3 py-1 rounded-full mb-4">
+            🚧 เร็วๆ นี้ — ระบบชำระเงินยังไม่เปิดให้บริการจริง
+          </span>
+
+          <h2
+            className="text-3xl md:text-4xl font-semibold mb-4"
+            style={{
+              background: 'linear-gradient(to bottom, #ffffff, rgba(255,255,255,0.7))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            แพ็กเกจที่เหมาะกับทุกทีม
+          </h2>
+          <p className="text-gray-400 text-sm max-w-md mx-auto">
+            ตอนนี้ใช้งานได้ฟรีทุกฟีเจอร์ระหว่างช่วง Beta
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`rounded-2xl p-6 border ${
+                plan.highlighted
+                  ? 'bg-blue-600/10 border-blue-500 relative'
+                  : 'bg-gray-900/50 border-gray-800'
+              }`}
+            >
+              {plan.highlighted && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                  ยอดนิยม
+                </span>
+              )}
+
+              <h3 className="text-white font-semibold mb-1">{plan.name}</h3>
+              <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
+
+              <div className="mb-6">
+                {plan.price === 'ติดต่อเรา' ? (
+                  <span className="text-2xl font-bold text-white">{plan.price}</span>
+                ) : (
+                  <>
+                    <span className="text-3xl font-bold text-white">฿{plan.price}</span>
+                    <span className="text-gray-400 text-sm">/เดือน</span>
+                  </>
+                )}
+              </div>
+
+              <ul className="space-y-2 mb-6">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-2 text-sm text-gray-300">
+                    <CheckCircle className="text-blue-400 shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+                            <Button
+                type="button"
+                variant="secondary"
+                disabled
+                className="w-full rounded-lg opacity-50 cursor-not-allowed"
+              >
+                เร็วๆ นี้
+              </Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+})
+
+Pricing.displayName = 'Pricing'
 // CTA Section
 const CTA = React.memo(() => {
   return (
@@ -482,6 +668,8 @@ export default function Component() {
       <Navigation />
       <Hero />
       <Features />
+      <HowItWorks />
+      <Pricing />
       <CTA />
       <Footer />
     </main>

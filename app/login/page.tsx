@@ -1,4 +1,5 @@
 import { signIn } from '@/auth'
+import Image from 'next/image'
 
 export default function LoginPage() {
   return (
@@ -7,9 +8,14 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-xl">T</span>
-          </div>
+          <Image
+  src="/taskly-logo.png"
+  alt="Taskly"
+  width={64}
+  height={64}
+  className="rounded-xl mx-auto mb-4"
+  style={{ width: '64px', height: '64px' }}
+/>
           <h1 className="text-2xl font-bold text-white">Taskly</h1>
           <p className="text-slate-400 text-sm mt-1">
             จัดการงานของทีมคุณได้ง่ายขึ้น

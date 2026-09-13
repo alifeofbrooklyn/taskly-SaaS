@@ -1,6 +1,6 @@
 # 📋 Taskly — Task Management SaaS
 
-ระบบจัดการงานสำหรับทีมแบบ SaaS (Software as a Service) รองรับหลาย Workspace แยกข้อมูลกันตามทีม (Multi-tenant Architecture) พัฒนาด้วย Next.js App Router เต็มรูปแบบ ตั้งแต่ระบบ Authentication, Kanban Board แบบ Drag & Drop, ไปจนถึง Deploy ขึ้นใช้งานจริงบน Vercel
+ระบบจัดการงานสำหรับทีมแบบ SaaS (Software as a Service) รองรับหลาย Workspace แยกข้อมูลกันตามทีม (Multi-tenant Architecture) พัฒนาด้วย Next.js App Router เต็มรูปแบบ ตั้งแต่ระบบ Authentication, การจัดการสิทธิ์แบบ Role-Based Access Control, Kanban Board แบบ Drag & Drop, ไฟล์แนบ, ไปจนถึง Deploy ขึ้นใช้งานจริงบน Vercel
 
 🔗 **Live Demo:** [taskly-saa-s.vercel.app](https://taskly-saa-s.vercel.app)
 
@@ -9,11 +9,27 @@
 ### 🔐 Authentication
 - เข้าสู่ระบบด้วย Google OAuth ผ่าน Auth.js (NextAuth v5)
 - Session จัดการผ่าน Prisma Adapter เชื่อมกับฐานข้อมูลโดยตรง
+- Navbar แสดงข้อมูลผู้ใช้และปุ่มออกจากระบบในทุกหน้า
 
 ### 🏢 Multi-tenant Workspace
-- ผู้ใช้สร้างและเข้าร่วมได้หลาย Workspace
+- ผู้ใช้สร้างและเข้าร่วมได้หลาย Workspace พร้อมกัน
 - แยกข้อมูลของแต่ละทีมออกจากกันอย่างสมบูรณ์ ตรวจสอบสิทธิ์การเข้าถึงทุก request
+- **Workspace Switcher** — สลับไปมาระหว่าง Workspace ที่เป็นสมาชิกอยู่ได้จาก Dropdown ใน Navbar
 - ระบบ Onboarding พาผู้ใช้ใหม่สร้าง Workspace แรกอัตโนมัติ
+
+### 👥 การจัดการสมาชิกและสิทธิ์ (Role-Based Access Control)
+ระบบสิทธิ์ 3 ระดับ ตรวจสอบทุก API endpoint:
+
+| การกระทำ | Owner | Admin | Member |
+|---|:---:|:---:|:---:|
+| เชิญสมาชิกใหม่ | ✅ | ✅ | ✅ |
+| ลบสมาชิกทั่วไป | ✅ | ✅ | ❌ |
+| ลบผู้ดูแล (Admin) คนอื่น | ✅ | ❌ | ❌ |
+| เลื่อน/ลดตำแหน่งเป็น Admin | ✅ | ❌ | ❌ |
+| ลบเจ้าของ Workspace | ❌ | ❌ | ❌ |
+
+- เจ้าของ Workspace เลื่อนสมาชิกขึ้นเป็นผู้ดูแล (Admin) หรือลดกลับเป็นสมาชิกได้
+- ป้องกันตัวเองไม่ให้ลบ/ลดสิทธิ์ตัวเองโดยไม่ตั้งใจ
 
 ### 📁 Projects
 - สร้าง/แก้ไข/ลบโปรเจกต์ในแต่ละ Workspace พร้อมเลือกสีประจำโปรเจกต์
@@ -25,13 +41,20 @@
 - กำหนด Priority, Due Date, และมอบหมายงานให้สมาชิกในทีม (Assignee)
 - Task Detail Modal แก้ไขรายละเอียดงานแบบเต็มรูปแบบ
 
+### 📎 ไฟล์แนบ (File Attachments)
+- แนบไฟล์เข้ากับ Task ได้โดยตรง (จำกัดขนาดไม่เกิน 10 MB ต่อไฟล์)
+- จัดเก็บไฟล์จริงบน Supabase Storage แยกจาก Database
+- แสดงผลแบบ Grid 2 คอลัมน์ พร้อม Loading Spinner ระหว่างโหลด/อัปโหลด
+- เปิดดู/ดาวน์โหลดไฟล์ในแท็บใหม่ และลบไฟล์ได้ทันที
+
 ### 📊 Dashboard สรุปข้อมูล
 - ภาพรวมงานทั้งหมด, เปอร์เซ็นต์งานที่เสร็จแล้ว, งานที่เลยกำหนดส่ง
-- รายการ "งานของฉัน" และ "งานใกล้ถึงกำหนดส่ง" เรียงตามความเร่งด่วน
+- รายการ "งานของฉัน" เรียงตามความเร่งด่วน
+- รายการ "งานใกล้ถึงกำหนดส่ง" (ภายใน 7 วัน) ของทั้งทีม พร้อมแสดงรูป/ชื่อผู้รับผิดชอบ
 
 ### 🎨 UI/UX
 - ออกแบบด้วย Tailwind CSS ธีมสีเข้ม (Dark Theme)
-- Landing Page พร้อม Hero Section, Features, และ CTA
+- Landing Page พร้อม Hero, Features, How it works, Pricing (แสดงสถานะ Beta ชัดเจน), CTA
 - Responsive รองรับทุกขนาดหน้าจอ
 
 ## 🛠️ เทคโนโลยีที่ใช้
@@ -42,6 +65,7 @@
 | Backend | Next.js Route Handlers |
 | Database | PostgreSQL (Supabase) |
 | ORM | Prisma |
+| File Storage | Supabase Storage |
 | Authentication | Auth.js (NextAuth v5), Google OAuth 2.0 |
 | Deploy | Vercel |
 
@@ -56,19 +80,32 @@ taskly/
 │   │   │   ├── route.ts                     # List/Create workspace
 │   │   │   └── [slug]/
 │   │   │       ├── projects/route.ts        # List/Create projects
-│   │   │       └── summary/route.ts         # Dashboard summary
+│   │   │       ├── summary/route.ts         # Dashboard summary
+│   │   │       └── members/
+│   │   │           ├── route.ts             # List/Invite members
+│   │   │           └── [userId]/
+│   │   │               ├── route.ts         # Remove member
+│   │   │               └── role/route.ts    # Change role (Admin/Member)
 │   │   ├── projects/[id]/
 │   │   │   ├── route.ts                     # Update/Delete project
 │   │   │   └── tasks/route.ts               # List/Create tasks
-│   │   └── tasks/[id]/route.ts              # Update/Delete task
+│   │   ├── tasks/[id]/
+│   │   │   ├── route.ts                     # Update/Delete task
+│   │   │   └── attachments/route.ts         # Upload/List attachments
+│   │   └── attachments/[id]/route.ts        # Delete attachment
 │   ├── workspace/[slug]/
 │   │   ├── page.tsx                         # Workspace dashboard
+│   │   ├── workspace-navbar.tsx             # Navbar + Logout
+│   │   ├── workspace-switcher.tsx           # สลับ Workspace
 │   │   ├── dashboard-summary.tsx
 │   │   ├── projects-grid.tsx
+│   │   ├── members/
+│   │   │   ├── page.tsx
+│   │   │   └── members-list.tsx             # เชิญ/ลบ/เลื่อนสิทธิ์สมาชิก
 │   │   └── projects/[projectId]/
 │   │       ├── page.tsx                     # Kanban Board page
 │   │       ├── kanban-board.tsx
-│   │       └── task-modal.tsx
+│   │       └── task-modal.tsx               # รายละเอียด + ไฟล์แนบ
 │   ├── dashboard/page.tsx                   # Redirect logic
 │   ├── login/page.tsx
 │   ├── onboarding/page.tsx
@@ -77,6 +114,7 @@ taskly/
 │   └── saas-template.tsx                    # Landing Page
 ├── lib/
 │   ├── prisma.ts                            # Prisma Client singleton
+│   ├── supabase-storage.ts                  # จัดการไฟล์แนบ
 │   ├── utils.ts                             # Slug generator
 │   └── workspace.ts                         # Access control helper
 ├── auth.ts                                  # Auth.js config
@@ -96,6 +134,7 @@ taskly/
 | `WorkspaceMember` | ความสัมพันธ์ User-Workspace พร้อม Role (Owner/Admin/Member) |
 | `Project` | โปรเจกต์ภายใน Workspace |
 | `Task` | งานแต่ละชิ้น พร้อม Status, Priority, Due Date, Assignee |
+| `Attachment` | ไฟล์แนบของแต่ละ Task (metadata — ไฟล์จริงอยู่ Supabase Storage) |
 
 ## 🚀 วิธีติดตั้งและรันโปรเจกต์
 
@@ -119,12 +158,17 @@ npm install
 2. ไปที่ Settings → Database → Connection string
 3. คัดลอก **Transaction pooler** (port 6543) และ **Direct connection** (port 5432)
 
-### 3. ตั้งค่า Google OAuth
+### 3. ตั้งค่า Supabase Storage
+
+1. ไปที่ Storage → New bucket → ตั้งชื่อ `task-attachments` → เปิด Public bucket
+2. ไปที่ Settings → API → คัดลอก Project URL และ `service_role` key (Legacy API keys)
+
+### 4. ตั้งค่า Google OAuth
 
 1. เข้า Google Cloud Console → สร้าง OAuth 2.0 Client ID
 2. เพิ่ม Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
 
-### 4. สร้างไฟล์ `.env`
+### 5. สร้างไฟล์ `.env`
 
 ```env
 DATABASE_URL="postgresql://postgres.xxx:password@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true"
@@ -133,9 +177,12 @@ DIRECT_URL="postgresql://postgres:password@db.xxx.supabase.co:5432/postgres"
 AUTH_SECRET="สร้างด้วยคำสั่ง npx auth secret"
 AUTH_GOOGLE_ID="Client ID จาก Google Cloud Console"
 AUTH_GOOGLE_SECRET="Client Secret จาก Google Cloud Console"
+
+SUPABASE_URL="https://xxx.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="service_role key จาก Supabase"
 ```
 
-### 5. Push Database Schema และรันโปรเจกต์
+### 6. Push Database Schema และรันโปรเจกต์
 
 ```bash
 npx prisma db push
@@ -146,31 +193,25 @@ npm run dev
 
 ## 🌐 Deploy
 
-โปรเจกต์นี้ deploy บน [Vercel](https://vercel.com) โดย:
+โปรเจกต์นี้ deploy บน [Vercel](https://vercel.com)
 
 1. เชื่อม GitHub repository กับ Vercel
-2. เพิ่ม Environment Variables ทั้งหมดใน Vercel Project Settings
+2. เพิ่ม Environment Variables ทั้งหมดใน Vercel Project Settings (ครบทุก Environment: Production, Preview, Development)
 3. เพิ่ม `prisma generate && next build` ใน build script เพื่อป้องกัน Prisma Client cache ล้าสมัย
 4. เพิ่ม Production URL ใน Google OAuth Authorized redirect URIs
 
 ## 📸 ตัวอย่างหน้าจอ
-![alt text](image-4.png)
-![alt text](image-5.png)
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
+
+> เพิ่ม screenshot ของแอปพลิเคชันตรงนี้ (Landing Page, Kanban Board, Dashboard, หน้าจัดการสมาชิก, ไฟล์แนบ)
 
 ## 🔮 แนวทางพัฒนาต่อ
 
-- เชิญสมาชิกเข้า Workspace ผ่านอีเมล
+- ระบบเชิญสมาชิกผ่านอีเมลจริง (สำหรับคนที่ยังไม่เคยใช้แอปมาก่อน) ด้วย Email Service เช่น Resend
 - ระบบแจ้งเตือนผ่าน Email เมื่อใกล้ถึง Due Date
 - Real-time collaboration ด้วย WebSocket
-- เพิ่ม Role-based Permission ให้ละเอียดขึ้น (Admin จัดการได้มากกว่า Member)
-- รองรับ File Attachment ในแต่ละ Task
+- Custom Role และ Permission ที่ปรับแต่งได้ละเอียดขึ้น
+- เชื่อมระบบชำระเงินจริง (Stripe) สำหรับแพ็กเกจ Pro/Enterprise
 
 ## 👤 ผู้พัฒนา
 
 > ใส่ชื่อและช่องทางติดต่อของคุณตรงนี้ เช่น GitHub, LinkedIn, Email
-yuenyong.work@gmail.com
-https://github.com/alifeofbrooklyn

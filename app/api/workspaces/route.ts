@@ -41,14 +41,18 @@ export async function GET() {
     return NextResponse.json({ message: 'กรุณาเข้าสู่ระบบก่อน' }, { status: 401 })
   }
 
-  const workspaces = await prisma.workspace.findMany({
-    where: {
-      members: {
-        some: { userId: session.user.id },
-      },
-    },
+  const memberships = await prisma.workspaceMember.findMany({
+    where: { userId: session.user.id },
+    include: { workspace: true },
     orderBy: { createdAt: 'asc' },
   })
+
+  const workspaces = memberships.map((m) => ({
+    id: m.workspace.id,
+    name: m.workspace.name,
+    slug: m.workspace.slug,
+    role: m.role,
+  }))
 
   return NextResponse.json({ workspaces })
 }
